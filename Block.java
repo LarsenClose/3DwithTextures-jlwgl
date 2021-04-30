@@ -1,8 +1,12 @@
-import java.util.*;
+import java.util.Scanner;
+import java.util.ArrayList;
+
 import java.nio.FloatBuffer;
 
 
 public class Block {
+
+
 
    // return total number of vertices in all the triangles
    // in the list of blocks
@@ -19,12 +23,38 @@ public class Block {
    private Triple[] verts; // all model vertices of the triangles
    private int[][] tris; // indices into verts of each triangle
    public ArrayList<Mat4> matrices;
+   protected static double eps = Util.collTol; // just for typing convenience
+   private static int nextId = 0;
+   private int id;
 
+   protected double cx, cy, cz; // current center point of the block
+   protected double sx, sy, sz; // current size of block
+
+   // june25: remember how oriented, changing so cursor is at reference point
+   protected int ori; // is one of 0 (+x) 90 (+y) 180 (-x) 270 (-y)
+   protected double refX, refY, refZ; // keep reference point updated to match center
+
+   protected Triple vel; // current translational velocity for this block
+   // other physics stuff will be added later:
+
+   // texture info for the 6 faces
+   protected int[] textures; // texture number for each face in standard order
+   // front, right, back, left, top, bottom
+   protected double[] texScales; // each kind of block has its own texture
+   // scaling
+
+   protected ArrayList<Request> requests;
+   // protected ArrayList<Request> requests;
+
+   // universal attributes
+   protected boolean supported;
 
    // transformations:
    Mat4 scale, scaleHalf, rotate, translate, translateOne, translateTwo, translateTre, translateFour, translateFive;
 
    public Block(Scanner input) {
+      nextId++;
+      id = nextId;
 
       kind = input.next();
       input.nextLine();
@@ -47,7 +77,6 @@ public class Block {
 
             };
          } // pyramid
-
 
          else if (kind.equals("groundBox") || kind.equals("clownBox")) {
 
@@ -91,18 +120,13 @@ public class Block {
       double tx = input.nextDouble(), ty = input.nextDouble(), tz = input.nextDouble();
       input.nextLine();
       translate = Mat4.translate(tx, ty, tz);
-            
-
 
    }
-
-
 
    // send the position and color data for all the
    // vertices in all the triangles
    public void sendData(FloatBuffer positionBuffer, FloatBuffer colorBuffer) {
       Mat4 matrix = translate.mult(rotate.mult(scale));
-      
 
       for (int k = 0; k < tris.length; k++) {
          for (int j = 0; j < 3; j++) {
@@ -110,9 +134,9 @@ public class Block {
             v.sendData(positionBuffer);
             if (kind.equals("clownBox")) {
                Colors.sendData(k, colorBuffer);
-            } else if (kind.equals("pyraBox"))  {
+            } else if (kind.equals("pyraBox")) {
                Colors.sendData(k + 12, colorBuffer);
-            } else if (kind.equals("sierpinskiBox"))  {
+            } else if (kind.equals("sierpinskiBox")) {
                Colors.sendData(k + 12, colorBuffer);
             } else if (kind.equals("groundBox")) {
                Colors.sendData(19, colorBuffer);
@@ -120,11 +144,86 @@ public class Block {
          }
       }
    }
-      
-
 
    public int numVerts() {
       return tris.length * 3;
+   }
+
+   public void draw(ArrayList<Triangle> list) {
+
+      Vertex v1, v2, v3; // convenience
+
+      // front face (index 0) --------------------
+
+      v1 = new Vertex(cx - sx, cy - sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy - sy, cz - sz, 2 * sx / texScales[0], 0);
+      v3 = new Vertex(cx + sx, cy - sy, cz + sz, 2 * sx / texScales[0], 2 * sz / texScales[0]);
+      list.add(new Triangle(v1, v2, v3, textures[0]));
+
+      v1 = new Vertex(cx - sx, cy - sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy - sy, cz + sz, 2 * sx / texScales[0], 2 * sz / texScales[0]);
+      v3 = new Vertex(cx - sx, cy - sy, cz + sz, 0, 2 * sz / texScales[0]);
+      list.add(new Triangle(v1, v2, v3, textures[0]));
+
+      // right face (index 1) --------------------
+
+      v1 = new Vertex(cx + sx, cy - sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy + sy, cz - sz, 2 * sy / texScales[1], 0);
+      v3 = new Vertex(cx + sx, cy + sy, cz + sz, 2 * sy / texScales[1], 2 * sz / texScales[1]);
+      list.add(new Triangle(v1, v2, v3, textures[1]));
+
+      v1 = new Vertex(cx + sx, cy - sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy + sy, cz + sz, 2 * sy / texScales[1], 2 * sz / texScales[1]);
+      v3 = new Vertex(cx + sx, cy - sy, cz + sz, 0, 2 * sz / texScales[1]);
+      list.add(new Triangle(v1, v2, v3, textures[1]));
+
+      // back face (index 2) --------------------
+
+      v1 = new Vertex(cx + sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx - sx, cy + sy, cz - sz, 2 * sx / texScales[2], 0);
+      v3 = new Vertex(cx - sx, cy + sy, cz + sz, 2 * sx / texScales[2], 2 * sz / texScales[2]);
+      list.add(new Triangle(v1, v2, v3, textures[2]));
+
+      v1 = new Vertex(cx + sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx - sx, cy + sy, cz + sz, 2 * sx / texScales[2], 2 * sz / texScales[2]);
+      v3 = new Vertex(cx + sx, cy + sy, cz + sz, 0, 2 * sz / texScales[2]);
+      list.add(new Triangle(v1, v2, v3, textures[2]));
+
+      // left face (index 3) --------------------
+
+      v1 = new Vertex(cx - sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx - sx, cy - sy, cz - sz, 2 * sy / texScales[3], 0);
+      v3 = new Vertex(cx - sx, cy - sy, cz + sz, 2 * sy / texScales[3], 2 * sz / texScales[3]);
+      list.add(new Triangle(v1, v2, v3, textures[3]));
+
+      v1 = new Vertex(cx - sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx - sx, cy - sy, cz + sz, 2 * sy / texScales[3], 2 * sz / texScales[3]);
+      v3 = new Vertex(cx - sx, cy + sy, cz + sz, 0, 2 * sz / texScales[3]);
+      list.add(new Triangle(v1, v2, v3, textures[3]));
+
+      // top face (index 4) --------------------
+
+      v1 = new Vertex(cx - sx, cy - sy, cz + sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy - sy, cz + sz, 2 * sx / texScales[4], 0);
+      v3 = new Vertex(cx + sx, cy + sy, cz + sz, 2 * sx / texScales[4], 2 * sy / texScales[4]);
+      list.add(new Triangle(v1, v2, v3, textures[4]));
+
+      v1 = new Vertex(cx - sx, cy - sy, cz + sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy + sy, cz + sz, 2 * sx / texScales[4], 2 * sy / texScales[4]);
+      v3 = new Vertex(cx - sx, cy + sy, cz + sz, 0, 2 * sy / texScales[4]);
+      list.add(new Triangle(v1, v2, v3, textures[4]));
+
+      // bottom face (index 5) --------------------
+
+      v1 = new Vertex(cx - sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy + sy, cz - sz, 2 * sx / texScales[5], 0);
+      v3 = new Vertex(cx + sx, cy - sy, cz - sz, 2 * sx / texScales[5], 2 * sy / texScales[5]);
+      list.add(new Triangle(v1, v2, v3, textures[5]));
+
+      v1 = new Vertex(cx - sx, cy + sy, cz - sz, 0, 0);
+      v2 = new Vertex(cx + sx, cy - sy, cz - sz, 2 * sx / texScales[5], 2 * sy / texScales[5]);
+      v3 = new Vertex(cx - sx, cy - sy, cz - sz, 0, 2 * sy / texScales[5]);
+      list.add(new Triangle(v1, v2, v3, textures[5]));
    }
 
 }

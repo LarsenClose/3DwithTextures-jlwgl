@@ -24,13 +24,20 @@ import static org.lwjgl.opengl.GL20.*;
 import java.util.Scanner;
 import java.io.*;
 
+import java.util.Random;
 public class Util
 {
   // change this to 1 if not a retinaDisplay 
   // (or probably other fancy monitors?)
   public final static int retinaDisplay = 2;  // 2 for Mac retina
 
-/*
+  public final static double collTol = 0.0001;  
+
+  public final static double gravityAmount = -32.0 / 900;
+
+  public final static int gridAngle = 15;
+
+  public static Random rng = new Random();
   // this is the one big, frequently reused app
   // buffer, direct allocated outside usual heap, apparently
   public static FloatBuffer appDataBuffer;
@@ -72,7 +79,7 @@ public class Util
 
     bufferClear();  // clear the appDataBuffer
   }
-*/
+
 
   public static void error( String message ){
     int error = glGetError();

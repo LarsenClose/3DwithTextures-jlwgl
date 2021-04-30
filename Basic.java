@@ -38,6 +38,10 @@ import static org.lwjgl.system.MemoryUtil.*;
  
 public class Basic{
  
+
+  // set to 2 for Retina displays like in AES 250, 1 on non-Retina displays
+  public final static int RETINAFACTOR = 2;
+
   // We need to strongly reference callback instances.
   private GLFWKeyCallback keyCallback;
   private GLFWCursorPosCallback cursorPosCallback;
