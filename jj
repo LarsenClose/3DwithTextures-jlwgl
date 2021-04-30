@@ -1,0 +1,68 @@
+#! /bin/bash
+
+
+if [[ "$OSTYPE" == "darwin"* ]]
+then
+	rm *.class
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo
+	echo "------------------------------------- Syntax errors (if any):"
+	echo
+	javac -cp ../LWJGL/lwjgl.jar:../LWJGL/lwjgl-opengl.jar:../LWJGL/lwjgl-glfw.jar:. $1.java
+	echo
+	echo "------------------------------------- Runtime errors (if any):"
+	echo
+	java -XstartOnFirstThread -cp .:../LWJGL/lwjgl.jar:../LWJGL/lwjgl-opengl.jar:../LWJGL/lwjgl-glfw.jar:../LWJGL/lwjgl-glfw-natives-macos.jar:../LWJGL/lwjgl-natives-macos.jar:../LWJGL/lwjgl-opengl-natives-macos.jar:. -Djava.library.path=../LWJGL $1 $2 $3 $4 $5 $6 $7 $8 $9
+
+elif [[ "$OSTYPE" == "linux-gnu" ]]
+then
+        rm *.class
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo
+        echo "------------------------------------- Syntax errors (if any):"
+        echo
+        javac -cp ../LWJGL/lwjgl.jar:../LWJGL/lwjgl-opengl.jar:../LWJGL/lwjgl-glfw.jar:. $1.java        
+        echo      
+        echo "------------------------------------- Runtime errors (if any):"
+	echo
+	java -cp .:../LWJGL/lwjgl.jar:../LWJGL/lwjgl-opengl.jar:../LWJGL/lwjgl-glfw.jar:../LWJGL/lwjgl-natives-linux.jar:../LWJGL/lwjgl-opengl-natives-linux.jar:../LWJGL/lwjgl-glfw-natives-linux.jar:. -Djava.library.path=../LWJGL $1 $2 $3 $4 $5 $6 $7 $8 $9
+fi
+
+
+rm *.class

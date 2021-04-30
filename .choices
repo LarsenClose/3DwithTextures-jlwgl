@@ -1,0 +1,8 @@
+
+read var1; ./jj $var1
+
+rm *.class
+
+sudo update-alternatives --config java 
+
+./jj NatView test1
