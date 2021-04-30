@@ -1,6 +1,4 @@
-/*
-   putting it all together in Chapter 7!
-*/
+
 
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
@@ -19,17 +17,17 @@ import java.util.Scanner;
 import java.io.*;
 import javax.swing.JFileChooser;
 
-public class Ch7 extends Basic {
+public class CastlesIntheDigital extends Basic {
 
   private static final int MAX = 1000;
 
   public static void main(String[] args) {
     if (args.length != 1) {
-      System.out.println("Usage:  j Ch7 <input file name>");
+      System.out.println("Usage:  j CastlesIntheDigital <input file name>");
       System.exit(1);
     }
 
-    Ch7 app = new Ch7("Chapter 7", 1000, 500, 30, args[0]);
+    CastlesIntheDigital app = new CastlesIntheDigital("Chapter 7", 1000, 500, 30, args[0]);
     app.start();
   } // main
 
@@ -57,7 +55,7 @@ public class Ch7 extends Basic {
 
   // construct basic application with given title, pixel width and height
   // of drawing area, and frames per second
-  public Ch7(String appTitle, int pw, int ph, int fps, String fileName) {
+  public CastlesIntheDigital(String appTitle, int pw, int ph, int fps, String fileName) {
     super(appTitle, pw, ph, (long) ((1.0 / fps) * 1000000000));
 
     // pic = new Pic("image", "Pictures/" + greenfire);
@@ -555,4 +553,4 @@ private double[] texCoords = { 0.0, 0.0,
       buffer.put(array[k]);
     }
   } // sendArrayToBuffer
-} // Ch7
+} // CastlesIntheDigital
