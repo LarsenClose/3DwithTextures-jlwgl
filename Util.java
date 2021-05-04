@@ -5,6 +5,7 @@
    class
 */
 
+
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
@@ -25,11 +26,10 @@ import java.util.Scanner;
 import java.io.*;
 
 import java.util.Random;
+
 public class Util
 {
-  // change this to 1 if not a retinaDisplay 
-  // (or probably other fancy monitors?)
-  public final static int retinaDisplay = 2;  // 2 for Mac retina
+  public final static int retinaDisplay = 2;
 
   public final static double collTol = 0.0001;  
 
@@ -38,6 +38,7 @@ public class Util
   public final static int gridAngle = 15;
 
   public static Random rng = new Random();
+
   // this is the one big, frequently reused app
   // buffer, direct allocated outside usual heap, apparently
   public static FloatBuffer appDataBuffer;
@@ -79,7 +80,6 @@ public class Util
 
     bufferClear();  // clear the appDataBuffer
   }
-
 
   public static void error( String message ){
     int error = glGetError();
@@ -284,5 +284,15 @@ public class Util
   {
     return String.format("%" + width + "." + decimals + "f", x );
   }
+
+   // generate random number in [a,b]
+   public static double random( double a, double b ) {
+      return a + rng.nextDouble()*(b-a);
+   }
+   // generate a random point in cube centered at c with sizes s
+   public static Triple randomPoint( double cx, double cy, double cz, 
+                                     double sx, double sy, double sz ) {
+      return new Triple( random( cx-sx, cx+sx), random(cy-sy,cy+sy), random(cz-sz,cz+sz) );     
+   }
 
 }

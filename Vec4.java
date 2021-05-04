@@ -47,25 +47,25 @@ public class Vec4 {
    }
 
  // -----------------------
-
 /*
 
-   public void sendData( FloatBuffer buff ) {
-      buff.put( (float) x );
-      buff.put( (float) y );
-      buff.put( (float) z );
-   }
+
+   // public void sendData( FloatBuffer buff ) {
+   //    buff.put( (float) x );
+   //    buff.put( (float) y );
+   //    buff.put( (float) z );
+   // }
 
    // get perspective view transformation of this point in space
    // from the camera and send it
-   public void sendData( FloatBuffer buff, Camera camera ) {
+   // public void sendData( FloatBuffer buff, Camera camera ) {
 
-      Vec4 r = camera.viewTransform( this );
+   //    Vec4 r = camera.viewTransform( this );
 
-      buff.put( (float) r.x );
-      buff.put( (float) r.y );
-      buff.put( (float) r.z );
-   }
+   //    buff.put( (float) r.x );
+   //    buff.put( (float) r.y );
+   //    buff.put( (float) r.z );
+   // }
 
    // return this triple minus the other
    public Vec4 minus( Vec4 other ) {

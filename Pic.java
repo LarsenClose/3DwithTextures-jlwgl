@@ -5,11 +5,15 @@
 
 import java.io.*;
 import java.util.*;
+
+import javax.swing.plaf.DimensionUIResource;
+
 import java.awt.*;
 import java.awt.image.*;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.FloatBuffer;
 
 public class Pic
 {
@@ -31,7 +35,7 @@ public class Pic
     // scan and store the image data
     try{
       FileInputStream input = new FileInputStream( new File( fileName ) );
-
+ 
       byte upperNumCols = (byte) input.read();
       byte lowerNumCols = (byte) input.read();
       numCols = toInt( upperNumCols, lowerNumCols );
@@ -50,7 +54,7 @@ public class Pic
 
       for( int k=0; k<4*numRows*numCols; k++ )
         data.put( (byte) input.read() );
-
+      
       data.rewind();
 
       input.close();
@@ -70,8 +74,8 @@ public class Pic
     if( kind == 1 )
     {// checkboard
        int numSq = 8, numPix = 8;
-       numRows = numSq*numPix;
-       numCols = numSq*numPix;
+       numRows = numSq*numPix;      
+       numCols = numSq*numPix;      
        data = ByteBuffer.allocateDirect( 4*numRows*numCols );
        data.order( ByteOrder.nativeOrder() );
 
@@ -120,7 +124,7 @@ public class Pic
       int first = 0, last = numCols-1;
       byte r1=(byte) 255, g1=(byte) 0, b1=(byte) 0, a1=(byte) 255;
       byte r2=(byte) 0, g2=(byte) 255, b2=(byte) 0, a2=(byte) 255;
-
+      
 
       for( int r=0; r<numRows; r++ )
       {
@@ -138,7 +142,7 @@ public class Pic
         // advance both
         first++;  last--;
       }
-
+      
     }
 
   }// procedural constructor
@@ -179,7 +183,7 @@ public class Pic
 
   public ByteBuffer getData()
   {
-    return data;
+    return data; 
   }
 
   public void showData()
@@ -279,29 +283,59 @@ public class Pic
   // repository of all pics:
 
   private static ArrayList<Pic> list;  // holds all pic instances
-
+  
   // change file names and add more textures here:
-  public static void init(){
+  public static ArrayList<Pic> init(){
     list = new ArrayList<Pic>();
 
+       // texture 1:
+       addTexture( "redfire" );
+
+       // texture 2:
+       addTexture( "greenfire" );
+   
+       // texture 3:
+       addTexture( "purplefire" );
+   
+       // texture 4:
+       addTexture( "orangefire" );
+   
+       // texture 5:
+       addTexture( "bluefire" );
+       
+       return list;
+  }
 
 
-    // texture 1:
-    addTexture( "redfire-1" );
 
-    // texture 2:
-    addTexture( "greenfire-1" );
+ // holds all pic instances
 
-    // texture 3:
-    addTexture( "purplefire-1" );
+  // change file names and add more textures here:
+  private static ArrayList<Triple> picList; 
 
-    // texture 4:
-    addTexture( "orangefire-1" );
+  public static ArrayList<Triple> bring(){
+       // texture 1:
 
-    // texture 5:
-    addTexture( "bluefire-1" );
+      Pic pic0 =  Pic.get(0);
+      picList.add(new Triple(pic0.getHeight(), pic0.getWidth(), 1));
+       
+      Pic pic1 =  Pic.get(1);
+      picList.add(new Triple(pic1.getHeight(), pic1.getWidth(), 1));
+       
 
+      Pic pic2 =  Pic.get(2);
+      picList.add(new Triple(pic2.getHeight(), pic2.getWidth(), 1));
+       
 
+      Pic pic3 =  Pic.get(3);
+      picList.add(new Triple(pic3.getHeight(), pic3.getWidth(), 1));
+       
+
+      Pic pic4 =  Pic.get(4);
+      picList.add(new Triple(pic4.getHeight(), pic4.getWidth(), 1));
+       
+
+       return picList;
   }
 
   private static void addTexture( String name ) {
@@ -317,4 +351,12 @@ public class Pic
     return list.get( index );
   }
 
+  public static void sendData(int k, FloatBuffer buffer) {
+    Pic tmp = list.get(k); 
+    Triple trippy = new Triple(tmp.getHeight(), tmp.getWidth(), 1);
+    trippy.sendData(buffer);
+ }
+
 }
+
+

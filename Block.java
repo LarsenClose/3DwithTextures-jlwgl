@@ -7,6 +7,7 @@ import java.nio.FloatBuffer;
 public class Block {
 
 
+   public double [] allPositions;
 
    // return total number of vertices in all the triangles
    // in the list of blocks
@@ -17,12 +18,27 @@ public class Block {
       }
       return count;
    }
+   // public static int getNumVerts(ArrayList<Block> list) {
+   //    int count = 0;
+   //    for (int k = 0; k < list.size(); k++) {
+   //       count += list.get(k).numVerts();
+   //    }
+   //    return count;
+   
+   
+   // public static int getBlockPosArray(ArrayList<Block> list) {
+   //    int count = 0;
+   //    for (int k = 0; k < list.size(); k++) {
+   //       count += list.get(k).numVerts();
+   //    }
+   //    return count;
+   // }
 
    // instance fields
    private String kind;
    private Triple[] verts; // all model vertices of the triangles
    private int[][] tris; // indices into verts of each triangle
-   public ArrayList<Mat4> matrices;
+   public static ArrayList<Mat4> matrices;
    protected static double eps = Util.collTol; // just for typing convenience
    private static int nextId = 0;
    private int id;
@@ -43,8 +59,7 @@ public class Block {
    protected double[] texScales; // each kind of block has its own texture
    // scaling
 
-   protected ArrayList<Request> requests;
-   // protected ArrayList<Request> requests;
+
 
    // universal attributes
    protected boolean supported;
@@ -125,7 +140,7 @@ public class Block {
 
    // send the position and color data for all the
    // vertices in all the triangles
-   public void sendData(FloatBuffer positionBuffer, FloatBuffer colorBuffer) {
+   public void sendData(FloatBuffer positionBuffer, FloatBuffer textBuffer) {
       Mat4 matrix = translate.mult(rotate.mult(scale));
 
       for (int k = 0; k < tris.length; k++) {
@@ -133,13 +148,13 @@ public class Block {
             Vec4 v = matrix.mult(verts[tris[k][j]].toVec4());
             v.sendData(positionBuffer);
             if (kind.equals("clownBox")) {
-               Colors.sendData(k, colorBuffer);
+               Pic.sendData(k%4, textBuffer);
             } else if (kind.equals("pyraBox")) {
-               Colors.sendData(k + 12, colorBuffer);
+               Pic.sendData(k%4, textBuffer);
             } else if (kind.equals("sierpinskiBox")) {
-               Colors.sendData(k + 12, colorBuffer);
+               Pic.sendData(k%4, textBuffer);
             } else if (kind.equals("groundBox")) {
-               Colors.sendData(19, colorBuffer);
+               Pic.sendData(k%4, textBuffer);
             }
          }
       }
