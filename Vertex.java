@@ -3,8 +3,8 @@ import java.util.Scanner;
 
 public class Vertex {
 
-   private Triple position;
-   private Triple color;
+   // private Triple position;
+   // private Triple color;
    private double x, y, z; // position
    private double s, t; // texture coordinates
 
@@ -41,19 +41,19 @@ public class Vertex {
       return "[" + x + " " + y + " " + z + "]";
    }
 
-   public Vertex(Triple p, Triple c) {
-      position = p;
-      color = c;
-   }
+   // public Vertex(Triple p, Triple c) {
+   //    position = p;
+   //    color = c;
+   // }
 
-   public Vertex(Scanner input) {
-      position = new Triple(input);
-      color = new Triple(input);
-   }
+   // public Vertex(Scanner input) {
+   //    position = new Triple(input);
+   //    color = new Triple(input);
+   // }
 
-   public void sendData(FloatBuffer pb, FloatBuffer cb) {
-      position.sendData(pb);
-      color.sendData(cb);
-   }
+   // public void sendData(FloatBuffer pb, FloatBuffer cb) {
+   //    position.sendData(pb);
+   //    color.sendData(cb);
+   // }
 
 }

@@ -59,14 +59,11 @@ public class OpenGL{
 //----------------------------------------------------------------------
 
     System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n" );
+    nextId++;
+    id = nextId;
 
-    v1 = new Shader( "vertex", vertexShaderCode );
-
-    String fragmentShaderCode =
-//----------------------------------------------------------------------
-"#version 330 core\n"+
-"in vec2 texCoord;\n"+
-"layout (location = 0 ) out vec4 fragColor;\n"+
+    kind = input.next();
+    input.nextLine();
 "uniform sampler2D texture1;\n"+
 "void main(void)\n"+
 "{\n"+
@@ -97,50 +94,50 @@ public class OpenGL{
 
     // set up shaders for splash screen rendering of triangles:
 
-//     vertexShaderCode =
-// //----------------------------------------------------------------------
-// "#version 330 core\n"+
-// "layout (location = 0) in vec3 vertexPosition;\n"+
-// "layout (location = 1) in vec2 vertexTexCoord;\n"+
-// "out vec2 texCoord;\n"+
-// "void main(void)\n"+
-// "{\n"+
-// "  texCoord = vertexTexCoord;\n"+
-// "  gl_Position = vec4(vertexPosition,1.0);\n"+
-// "}\n";
-// //----------------------------------------------------------------------
+    vertexShaderCode =
+//----------------------------------------------------------------------
+"#version 330 core\n"+
+"layout (location = 0) in vec3 vertexPosition;\n"+
+"layout (location = 1) in vec2 vertexTexCoord;\n"+
+"out vec2 texCoord;\n"+
+"void main(void)\n"+
+"{\n"+
+"  texCoord = vertexTexCoord;\n"+
+"  gl_Position = vec4(vertexPosition,1.0);\n"+
+"}\n";
+//----------------------------------------------------------------------
 
-    // System.out.println("Splash screen vertex shader:\n" + vertexShaderCode + "\n\n" );
+    System.out.println("Splash screen vertex shader:\n" + vertexShaderCode + "\n\n" );
 
-//     v2 = new Shader( "vertex", vertexShaderCode );
+    v2 = new Shader( "vertex", vertexShaderCode );
 
-//     fragmentShaderCode =
-// //----------------------------------------------------------------------
-// "#version 330 core\n"+
-// "in vec2 texCoord;\n"+
-// "layout (location = 0) out vec4 fragColor;\n"+
-// "uniform sampler2D texture1;\n"+
-// "void main(void)\n"+
-// "{\n"+
-// "  fragColor = texture( texture1, texCoord );\n"+
-// "}\n";
-// //----------------------------------------------------------------------
+    fragmentShaderCode =
+//----------------------------------------------------------------------
+"#version 330 core\n"+
+"in vec2 texCoord;\n"+
+"layout (location = 0) out vec4 fragColor;\n"+
+"uniform sampler2D texture1;\n"+
+"void main(void)\n"+
+"{\n"+
+"  fragColor = texture( texture1, texCoord );\n"+
+"}\n";
+//----------------------------------------------------------------------
 
-//     System.out.println("Splash screen Fragment shader:\n" + fragmentShaderCode + "\n\n" );
+    System.out.println("Splash screen Fragment shader:\n" + fragmentShaderCode + "\n\n" );
 
-//     f2 = new Shader( "fragment", fragmentShaderCode );
+    f2 = new Shader( "fragment", fragmentShaderCode );
 
-//     hp2 = GL20.glCreateProgram();
-//          Util.error("after create program");
-//          System.out.println("program handle is " + hp2 );
+    hp2 = GL20.glCreateProgram();
+         Util.error("after create program");
+         System.out.println("program handle is " + hp2 );
 
-//     GL20.glAttachShader( hp2, v2.getHandle() );
-//          Util.error("after attach vertex shader to program");
+    GL20.glAttachShader( hp2, v2.getHandle() );
+         Util.error("after attach vertex shader to program");
 
-//     GL20.glAttachShader( hp2, f2.getHandle() );
-//          Util.error("after attach fragment shader to program");
+    GL20.glAttachShader( hp2, f2.getHandle() );
+         Util.error("after attach fragment shader to program");
 
-//     GL20.glLinkProgram( hp2 );
+    GL20.glLinkProgram( hp2 );
 
     
     // enable depth buffering
@@ -157,11 +154,11 @@ public class OpenGL{
          Util.error("after use regular program");
    }
 
-//    // activate shaders for splash screen rendering:
-//    public static void useSplashScreenProgram() {
-//       GL20.glUseProgram( hp2 );
-//          Util.error("after use splash program");
-//    }
+   // activate shaders for splash screen rendering:
+   public static void useSplashScreenProgram() {
+      GL20.glUseProgram( hp2 );
+         Util.error("after use splash program");
+   }
 
   // allow any code to get location for a uniform variable
   // (used by Camera)
@@ -243,7 +240,7 @@ public class OpenGL{
     // send texture sampler as a uniform
     int loc = GL20.glGetUniformLocation( hp1, "texture" );
            Util.error("after get uniform location for texture");
-//           System.out.println("got loc for texture: " + loc );
+          System.out.println("got loc for texture: " + loc );
     GL20.glUniform1i( loc, pic.getIndex() );  // connect texture
            Util.error("after set value of texture");
   }

@@ -1,7 +1,7 @@
 150 150 25       camera location
 230 0 2       azi alt dist
 
-1          number of blocks in the scene
+20          number of blocks in the scene
 
 groundBox   ground box for scene
 50 50 -.001

@@ -307,37 +307,6 @@ public class Pic
   }
 
 
-
- // holds all pic instances
-
-  // change file names and add more textures here:
-  private static ArrayList<Triple> picList; 
-
-  public static ArrayList<Triple> bring(){
-       // texture 1:
-
-      Pic pic0 =  Pic.get(0);
-      picList.add(new Triple(pic0.getHeight(), pic0.getWidth(), 1));
-       
-      Pic pic1 =  Pic.get(1);
-      picList.add(new Triple(pic1.getHeight(), pic1.getWidth(), 1));
-       
-
-      Pic pic2 =  Pic.get(2);
-      picList.add(new Triple(pic2.getHeight(), pic2.getWidth(), 1));
-       
-
-      Pic pic3 =  Pic.get(3);
-      picList.add(new Triple(pic3.getHeight(), pic3.getWidth(), 1));
-       
-
-      Pic pic4 =  Pic.get(4);
-      picList.add(new Triple(pic4.getHeight(), pic4.getWidth(), 1));
-       
-
-       return picList;
-  }
-
   private static void addTexture( String name ) {
     list.add( new Pic( name, Pic.folderName + "/" + name ) );
   }
@@ -351,12 +320,4 @@ public class Pic
     return list.get( index );
   }
 
-  public static void sendData(int k, FloatBuffer buffer) {
-    Pic tmp = list.get(k); 
-    Triple trippy = new Triple(tmp.getHeight(), tmp.getWidth(), 1);
-    trippy.sendData(buffer);
- }
-
 }
-
-

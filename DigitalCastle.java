@@ -44,6 +44,8 @@ public class DigitalCastle extends Basic {
 
   private ArrayList<Block> blocks;
 
+  public static Pic[] pictures;
+
   private int positionHandle, colorHandle, textHandle;
   private FloatBuffer positionBuffer, colorBuffer, textureBuffer;
   private Camera camera, mapView;
@@ -53,13 +55,10 @@ public class DigitalCastle extends Basic {
   public DigitalCastle(String appTitle, int pw, int ph, int fps, String fileName) {
     super(appTitle, pw, ph, (long) ((1.0 / fps) * 1000000000));
 
-    // pic = new Pic("image", "Pictures/" + greenfire);
 
-    // read camera data and triangle data from data file with given name
     try {
 
-      Pic.init();
-      Util.init();
+
 
       Scanner input = new Scanner(new File(fileName));
 
@@ -81,6 +80,8 @@ public class DigitalCastle extends Basic {
   }
 
   protected void init() {
+     Pic.init();
+     Util.init();
 
     OpenGL.init();
     OpenGL.useRegularProgram();
@@ -91,62 +92,64 @@ public class DigitalCastle extends Basic {
       System.out.println("activated texture number " + k);
     }
 
-    OpenGL.setBackColor(0, 0, 0);
+    OpenGL.setBackColor( 0, 0, 0 );
 
-                    String vertexShaderCode = "#version 330 core\n" + "layout (location = 0 ) in vec3 vertexPosition;\n"
-                        + "layout (location = 1 ) in vec2 vertexTexCoord;\n" + "out vec2 vertexTexCoord;\n" + "uniform mat4 frustum;\n"
-                        + "uniform mat4 lookAt;\n" + "void main(void)\n" 
-                        + "{\n" 
-                        + "  texCoord = vertexTexCoord;\n"
-                        + "  gl_Position = frustum * lookAt * vec4( vertexPosition, 1.0);\n" + "}\n";
 
-                    System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n");
 
-                    v1 = new Shader("vertex", vertexShaderCode);
+    // String vertexShaderCode = "#version 330 core\n" + "layout (location = 0 ) in vec3 vertexPosition;\n"
+    //     + "layout (location = 1 ) in vec2 vertexTexCoord;\n" + "out vec2 vertexTexCoord;\n" + "uniform mat4 frustum;\n"
+    //     + "uniform mat4 lookAt;\n" + "void main(void)\n" 
+    //     + "{\n" 
+    //     + "  texCoord = vertexTexCoord;\n"
+    //     + "  gl_Position = frustum * lookAt * vec4( vertexPosition, 1.0);\n" + "}\n";
 
-                    String fragmentShaderCode = "#version 330 core\n" 
-                        + "in vec2 texCoord;\n"
-                        + "layout (location = 0 ) out vec4 fragColor;\n" 
-                        + "void main(void)\n" 
-                        + "{\n"
-                        + "  fragColor = texture( texture, texCoord );\n" 
-                        + "}\n";
+    // System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n");
 
-                    System.out.println("Fragment shader:\n" + fragmentShaderCode + "\n\n");
+    // v1 = new Shader("vertex", vertexShaderCode);
 
-                    f1 = new Shader("fragment", fragmentShaderCode);
+    // String fragmentShaderCode = "#version 330 core\n" 
+    //     + "in vec2 texCoord;\n"
+    //     + "layout (location = 0 ) out vec4 fragColor;\n" 
+    //     + "void main(void)\n" 
+    //     + "{\n"
+    //     + "  fragColor = texture( texture, texCoord );\n" 
+    //     + "}\n";
 
-                    hp1 = GL20.glCreateProgram();
-                    Util.error("after create program");
-                    System.out.println("program handle is " + hp1);
+    // System.out.println("Fragment shader:\n" + fragmentShaderCode + "\n\n");
 
-                    GL20.glAttachShader(hp1, v1.getHandle());
-                    Util.error("after attach vertex shader to program");
+    // f1 = new Shader("fragment", fragmentShaderCode);
 
-                    GL20.glAttachShader(hp1, f1.getHandle());
-                    Util.error("after attach fragment shader to program");
+    // hp1 = GL20.glCreateProgram();
+    // Util.error("after create program");
+    // System.out.println("program handle is " + hp1);
 
-                    GL20.glLinkProgram(hp1);
-                    Util.error("after link program");
+    // GL20.glAttachShader(hp1, v1.getHandle());
+    // Util.error("after attach vertex shader to program");
 
-                    // GL20.glUseProgram(hp1);
-                    // Util.error("after use program");
+    // GL20.glAttachShader(hp1, f1.getHandle());
+    // Util.error("after attach fragment shader to program");
 
-                    // create vertex buffer objects and their handles one at a time
-                    positionHandle = GL15.glGenBuffers();
-                    textureHandle = GL15.glGenBuffers();
-                    System.out.println("have position handle " + positionHandle + " and texture handle " + textureHandle);
+    // GL20.glLinkProgram(hp1);
+    // Util.error("after link program");
 
-                    // create the buffers (data doesn't matter so much, just the size)
-                    positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
-                    textureBuffer = Util.createFloatBuffer(MAX * 2 * 1);
+    // // GL20.glUseProgram(hp1);
+    // // Util.error("after use program");
 
-                    // set the background color
-                    GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+    // // create vertex buffer objects and their handles one at a time
+    // positionHandle = GL15.glGenBuffers();
+    // textureHandle = GL15.glGenBuffers();
+    // System.out.println("have position handle " + positionHandle + " and texture handle " + textureHandle);
 
-                    GL11.glEnable(GL11.GL_DEPTH_TEST);
-                    GL11.glClearDepth(1.0f);
-                    GL11.glDepthFunc(GL11.GL_LESS);
+    // // create the buffers (data doesn't matter so much, just the size)
+    // positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
+    // textureBuffer = Util.createFloatBuffer(MAX * 2 * 1);
+
+    // // set the background color
+    // GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
+
+    // GL11.glEnable(GL11.GL_DEPTH_TEST);
+    // GL11.glClearDepth(1.0f);
+    // GL11.glDepthFunc(GL11.GL_LESS);
 
 
 
@@ -156,6 +159,7 @@ public class DigitalCastle extends Basic {
 
 
     for (int k = 0; k < Pic.size(); k++) {
+
       OpenGL.selectTexture(Pic.get(k));
       System.out.println("selected texture number " + k);
     }
