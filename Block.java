@@ -27,7 +27,7 @@ public class Block {
 
    // instance fields
    private String kind;
-   private Vertex[] verts;  // all model vertices of the triangles
+   private Triple[] verts;  // all model vertices of the triangles
    private int[][] tris;    // indices into verts of each triangle
    public ArrayList<Mat4> matrices;
 
@@ -49,7 +49,7 @@ protected double cx, cy, cz;  //  current center point of the block
   protected int ori;  // is one of 0 (+x) 90 (+y) 180 (-x) 270 (-y)
   protected double refX, refY, refZ;  // keep reference point updated to match center
 
-  protected Vertex vel;  // current translational velocity for this block
+  protected Triple vel;  // current translational velocity for this block
   // other physics stuff will be added later:
 
 
@@ -73,7 +73,7 @@ protected double cx, cy, cz;  //  current center point of the block
             // build the model vertices
             verts = new Vertex[5];
             // x y z <=> 4 2 1
-            verts[0] = new Vertex(-1, -1, 00, 0);
+            verts[0] = new Vertex(-1, -1, 0, 0, 0);
             verts[1] = new Vertex(-1, 1, 0, 0, 0);
             verts[2] = new Vertex(1, -1, 0, 0, 0);
             verts[3] = new Vertex(1, 1, 0, 0, 0);
@@ -140,24 +140,24 @@ protected double cx, cy, cz;  //  current center point of the block
 
       for (int k = 0; k < tris.length; k++) {
          for (int j = 0; j < 3; j++) {
-            Vec4 v = matrix.mult(verts[tris[k][j]].toVec4());
+            Vertex v = matrix.mult(verts[tris[k][j]].toVec4());
             v.positionToBuffer(positionBuffer);
-            v.texCoordsToBuffer(textBuffer);
+            v.texCoordsToBuffer(positionBuffer);
             if (kind.equals("clownBox")) {
 
                v.positionToBuffer(positionBuffer);
-               v.texCoordsToBuffer(textBuffer);
+               v.texCoordsToBuffer(positionBuffer);
             } else if (kind.equals("pyraBox")) {
                v.positionToBuffer(positionBuffer);
-               v.texCoordsToBuffer(textBuffer);
+               v.texCoordsToBuffer(positionBuffer);
  
             } else if (kind.equals("sierpinskiBox")) {
 
                v.positionToBuffer(positionBuffer);
-               v.texCoordsToBuffer(textBuffer);
+               v.texCoordsToBuffer(positionBuffer);
             } else if (kind.equals("groundBox")) {
                v.positionToBuffer(positionBuffer);
-               v.texCoordsToBuffer(textBuffer);
+               v.texCoordsToBuffer(positionBuffer);
             }
          }
       }
@@ -236,4 +236,3 @@ protected double cx, cy, cz;  //  current center point of the block
    // }
 
 }
-
