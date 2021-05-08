@@ -49,12 +49,12 @@ public class OpenGL{
 "layout (location = 0 ) in vec3 vertexPosition;\n"+
 "layout (location = 1 ) in vec2 vertexTexCoord;\n"+
 "out vec2 texCoord;\n"+
-"uniform mat4 proj;\n"+
-"uniform mat4 view;\n"+
+"uniform mat4 frustum;\n"+
+"uniform mat4 lookAt;\n" +
 "void main(void)\n"+
 "{\n"+
 "  texCoord = vertexTexCoord;\n"+
-"  gl_Position = proj * view * vec4( vertexPosition, 1.0);\n"+
+"  gl_Position = frustum * lookAt * vec4( vertexPosition, 1.0);\n"+
 "}\n";
 //----------------------------------------------------------------------
 

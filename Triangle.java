@@ -28,7 +28,7 @@ public class Triangle {
    public void texCoordsToBuffer() {
       a.texCoordsToBuffer();
       b.texCoordsToBuffer();
-      c.texCoordsToBuffer();
+      // c.texCoordsToBuffer();
    }
 
    public int getTexture() {

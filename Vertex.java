@@ -42,6 +42,7 @@ public class Vertex {
       Util.bufferPut(x);
       Util.bufferPut(y);
       Util.bufferPut(z);
+      Util.bufferPut(1);
    }
 
    // send texCoords data to Util.appDataBuffer

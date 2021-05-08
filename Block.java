@@ -53,6 +53,7 @@ public class Block {
 
       kind = input.next();
       input.nextLine();
+      ArrayList<Triangle> someTris = new ArrayList<Triangle>();
 
 
 
@@ -70,10 +71,8 @@ public class Block {
 
             // build the triangles
             tris = new int[][] { { 0, 1, 2 }, { 2, 3, 1 }, // bottom
-                  { 0, 1, 4 }, { 0, 2, 4 }, { 1, 3, 4 }, { 3, 2, 4 }, { 2, 3, 4 },
+                  { 0, 1, 4 }, { 0, 2, 4 }, { 1, 3, 4 }, { 3, 2, 4 }, { 2, 3, 4 }};
 
-               
-            };
          } // pyramid
 
          else if (kind.equals("groundBox") || kind.equals("clownBox")) {
@@ -128,7 +127,7 @@ public class Block {
 
    // send the position and color data for all the
    // vertices in all the triangles
-   public void sendData(FloatBuffer positionBuffer, FloatBuffer textureBuffer) {
+   public void sendData(FloatBuffer positionBuffer, FloatBuffer textBuffer) {
       Mat4 matrix = translate.mult(rotate.mult(scale));
      
 
@@ -138,6 +137,10 @@ public class Block {
 
          for (int j = 0; j < 3; j=j+3) {
             Vertex v = matrix.mult(verts[tris[k][j]]);
+
+            
+
+
             v.positionToBuffer();
 
 
