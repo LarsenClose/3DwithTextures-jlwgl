@@ -59,11 +59,14 @@ public class OpenGL{
 //----------------------------------------------------------------------
 
     System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n" );
-    nextId++;
-    id = nextId;
 
-    kind = input.next();
-    input.nextLine();
+    v1 = new Shader( "vertex", vertexShaderCode );
+
+    String fragmentShaderCode =
+//----------------------------------------------------------------------
+"#version 330 core\n"+
+"in vec2 texCoord;\n"+
+"layout (location = 0 ) out vec4 fragColor;\n"+
 "uniform sampler2D texture1;\n"+
 "void main(void)\n"+
 "{\n"+
@@ -240,7 +243,7 @@ public class OpenGL{
     // send texture sampler as a uniform
     int loc = GL20.glGetUniformLocation( hp1, "texture" );
            Util.error("after get uniform location for texture");
-          System.out.println("got loc for texture: " + loc );
+//           System.out.println("got loc for texture: " + loc );
     GL20.glUniform1i( loc, pic.getIndex() );  // connect texture
            Util.error("after set value of texture");
   }

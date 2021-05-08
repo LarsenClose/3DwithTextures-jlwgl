@@ -45,6 +45,7 @@ public class DigitalCastle extends Basic {
   private ArrayList<Block> blocks;
 
   public static Pic[] pictures;
+  public Soups triWe;
 
   private int positionHandle, colorHandle, textHandle;
   private FloatBuffer positionBuffer, colorBuffer, textureBuffer;
@@ -92,69 +93,11 @@ public class DigitalCastle extends Basic {
       System.out.println("activated texture number " + k);
     }
 
-    OpenGL.setBackColor( 0, 0, 0 );
+    OpenGL.setBackColor( 1, 1, 1 );
 
 
-
-    // String vertexShaderCode = "#version 330 core\n" + "layout (location = 0 ) in vec3 vertexPosition;\n"
-    //     + "layout (location = 1 ) in vec2 vertexTexCoord;\n" + "out vec2 vertexTexCoord;\n" + "uniform mat4 frustum;\n"
-    //     + "uniform mat4 lookAt;\n" + "void main(void)\n" 
-    //     + "{\n" 
-    //     + "  texCoord = vertexTexCoord;\n"
-    //     + "  gl_Position = frustum * lookAt * vec4( vertexPosition, 1.0);\n" + "}\n";
-
-    // System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n");
-
-    // v1 = new Shader("vertex", vertexShaderCode);
-
-    // String fragmentShaderCode = "#version 330 core\n" 
-    //     + "in vec2 texCoord;\n"
-    //     + "layout (location = 0 ) out vec4 fragColor;\n" 
-    //     + "void main(void)\n" 
-    //     + "{\n"
-    //     + "  fragColor = texture( texture, texCoord );\n" 
-    //     + "}\n";
-
-    // System.out.println("Fragment shader:\n" + fragmentShaderCode + "\n\n");
-
-    // f1 = new Shader("fragment", fragmentShaderCode);
-
-    // hp1 = GL20.glCreateProgram();
-    // Util.error("after create program");
-    // System.out.println("program handle is " + hp1);
-
-    // GL20.glAttachShader(hp1, v1.getHandle());
-    // Util.error("after attach vertex shader to program");
-
-    // GL20.glAttachShader(hp1, f1.getHandle());
-    // Util.error("after attach fragment shader to program");
-
-    // GL20.glLinkProgram(hp1);
-    // Util.error("after link program");
-
-    // // GL20.glUseProgram(hp1);
-    // // Util.error("after use program");
-
-    // // create vertex buffer objects and their handles one at a time
-    // positionHandle = GL15.glGenBuffers();
-    // textureHandle = GL15.glGenBuffers();
-    // System.out.println("have position handle " + positionHandle + " and texture handle " + textureHandle);
-
-    // // create the buffers (data doesn't matter so much, just the size)
-    // positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
-    // textureBuffer = Util.createFloatBuffer(MAX * 2 * 1);
-
-    // // set the background color
-    // GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-
-    // GL11.glEnable(GL11.GL_DEPTH_TEST);
-    // GL11.glClearDepth(1.0f);
-    // GL11.glDepthFunc(GL11.GL_LESS);
-
-
-
-
-
+    GL11.glEnable( GL11.GL_DEPTH_TEST );
+    GL11.glClearDepth( 1.0f );
 
 
 

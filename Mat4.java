@@ -111,6 +111,18 @@ public class Mat4 {
       return q;
    }
 
+   public Vertex mult( Vertex p ) {
+      Vertex q = new Vertex();
+      for (int r=0; r<4; r++) {
+         q.data[r] = 0;
+         for (int c=0; c<4; c++) {
+            q.data[r] += data[r][c] * p.data[c];
+         }
+      }
+      return q;
+   }
+
+
    // fill buffer with components of this matrix
    // in ROW major order (row by row, rather than
    // column by column), then transpose when

@@ -1,351 +1,145 @@
-import org.lwjgl.glfw.*;
-import org.lwjgl.opengl.*;
-
-import static org.lwjgl.glfw.Callbacks.*;
-import static org.lwjgl.glfw.GLFW.*; // just for the key constants
-import static org.lwjgl.system.MemoryUtil.*;
-
-import java.io.File;
 import java.nio.FloatBuffer;
-import java.nio.ByteBuffer;
-import java.nio.IntBuffer;
-
-import java.util.ArrayList;
 import java.util.Scanner;
-import java.io.*;
-import javax.swing.JFileChooser;
 
-public class DigitalCastle extends Basic {
+public class Vec4 {
 
-  private static final int MAX = 1000;
+   public double[] data;
 
-  public static void main(String[] args) {
-    if (args.length != 1) {
-      System.out.println("Usage:  j DigitalCastle <input file name>");
-      System.exit(1);
-    }
+   public Vec4() {
+      data = new double[4];
+   }
 
-    DigitalCastle app = new DigitalCastle("Chapter 7", 1000, 500, 30, args[0]);
-    app.start();
-  } // main
+   public Vec4( double a, double b, double c ) {
+      data = new double[4];
+      data[0] = a;  data[1] = b; data[2] = c; 
+      data[3] = 1;
+   }
 
-  // instance variables
-
-  private Pic pic;
-  private Shader v1, f1;
-  private int hp1; // handle for the GLSL program
-  private int textureId1;
-
-  private int vao, vbo, vaoHandle, vboPositionHandle, vboTexCoordsHandle; // handle to the vertex array object
-  private int vaoHandle1, vboPositionHandle1, vboTexCoordsHandle1, textureHandle;
-  private int vaoHandle2, vboPositionHandle2, vboTexCoordsHandle2;
-  private int colorLoc;
-  private int hp2;
-
-  private ArrayList<Block> blocks;
-
-  public static Pic[] pictures;
-
-  private int positionHandle, colorHandle, textHandle;
-  private FloatBuffer positionBuffer, colorBuffer, textureBuffer;
-  private Camera camera, mapView;
-
-  // construct basic application with given title, pixel width and height
-  // of drawing area, and frames per second
-  public DigitalCastle(String appTitle, int pw, int ph, int fps, String fileName) {
-    super(appTitle, pw, ph, (long) ((1.0 / fps) * 1000000000));
-
-
-    try {
-
-
-
-      Scanner input = new Scanner(new File(fileName));
-
-      mapView = new Camera(new Triple(50, 50, 100), 0, -90.00001, 2);
-      camera = new Camera(input);
-
-      blocks = new ArrayList<Block>();
-      int number = input.nextInt();
-      input.nextLine();
-      input.nextLine();
-      for (int k = 0; k < number; k++) {
-        blocks.add(new Block(input));
-        input.nextLine();
+   public Vec4( Scanner input ) {
+      for (int k=0; k<4; k++) {
+         data[k] = input.nextDouble();
       }
-    } catch (Exception e) {
-      System.out.println("Failed to open and load from [" + fileName + "]");
-      System.exit(1);
-    }
-  }
+      input.nextLine();
+   }
 
-  protected void init() {
-     Pic.init();
-     Util.init();
-
-    OpenGL.init();
-    OpenGL.useRegularProgram();
-
-    // activate all the textures
-    for (int k = 0; k < Pic.size(); k++) {
-      OpenGL.loadTexture(Pic.get(k));
-      System.out.println("activated texture number " + k);
-    }
-
-    OpenGL.setBackColor( 0, 0, 0 );
-
-
-
-    // String vertexShaderCode = "#version 330 core\n" + "layout (location = 0 ) in vec3 vertexPosition;\n"
-    //     + "layout (location = 1 ) in vec2 vertexTexCoord;\n" + "out vec2 vertexTexCoord;\n" + "uniform mat4 frustum;\n"
-    //     + "uniform mat4 lookAt;\n" + "void main(void)\n" 
-    //     + "{\n" 
-    //     + "  texCoord = vertexTexCoord;\n"
-    //     + "  gl_Position = frustum * lookAt * vec4( vertexPosition, 1.0);\n" + "}\n";
-
-    // System.out.println("Vertex shader:\n" + vertexShaderCode + "\n\n");
-
-    // v1 = new Shader("vertex", vertexShaderCode);
-
-    // String fragmentShaderCode = "#version 330 core\n" 
-    //     + "in vec2 texCoord;\n"
-    //     + "layout (location = 0 ) out vec4 fragColor;\n" 
-    //     + "void main(void)\n" 
-    //     + "{\n"
-    //     + "  fragColor = texture( texture, texCoord );\n" 
-    //     + "}\n";
-
-    // System.out.println("Fragment shader:\n" + fragmentShaderCode + "\n\n");
-
-    // f1 = new Shader("fragment", fragmentShaderCode);
-
-    // hp1 = GL20.glCreateProgram();
-    // Util.error("after create program");
-    // System.out.println("program handle is " + hp1);
-
-    // GL20.glAttachShader(hp1, v1.getHandle());
-    // Util.error("after attach vertex shader to program");
-
-    // GL20.glAttachShader(hp1, f1.getHandle());
-    // Util.error("after attach fragment shader to program");
-
-    // GL20.glLinkProgram(hp1);
-    // Util.error("after link program");
-
-    // // GL20.glUseProgram(hp1);
-    // // Util.error("after use program");
-
-    // // create vertex buffer objects and their handles one at a time
-    // positionHandle = GL15.glGenBuffers();
-    // textureHandle = GL15.glGenBuffers();
-    // System.out.println("have position handle " + positionHandle + " and texture handle " + textureHandle);
-
-    // // create the buffers (data doesn't matter so much, just the size)
-    // positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
-    // textureBuffer = Util.createFloatBuffer(MAX * 2 * 1);
-
-    // // set the background color
-    // GL11.glClearColor(1.0f, 1.0f, 1.0f, 0.0f);
-
-    // GL11.glEnable(GL11.GL_DEPTH_TEST);
-    // GL11.glClearDepth(1.0f);
-    // GL11.glDepthFunc(GL11.GL_LESS);
-
-
-
-
-
-
-
-
-    for (int k = 0; k < Pic.size(); k++) {
-
-      OpenGL.selectTexture(Pic.get(k));
-      System.out.println("selected texture number " + k);
-    }
-
-  }
-
-  protected void processInputs() {
-    // process all waiting input events
-    while (InputInfo.size() > 0) {
-      InputInfo info = InputInfo.get();
-
-      if (info.kind == 'k' && (info.action == GLFW_PRESS || info.action == GLFW_REPEAT)) {
-        int code = info.code;
-        boolean debug = false;
-
-        if (code == GLFW_KEY_A) { // look left
-          camera.turn(3);
-          if (debug)
-            mapView.turn(3);
-        } else if (code == GLFW_KEY_D) { // look right
-          camera.turn(-3);
-          if (debug)
-            mapView.turn(-3);
-        } else if (code == GLFW_KEY_Q) { // pan vision down
-          camera.tilt(-3);
-          if (debug)
-            mapView.tilt(-3);
-        } else if (code == GLFW_KEY_E) { // pan vision up
-          camera.tilt(3);
-          if (debug)
-            mapView.tilt(3);
-        } else if (code == GLFW_KEY_LEFT) { // strafe left relative to body orientation
-          camera.move(-1, 0, 0);
-          if (debug)
-            mapView.move(-1, 0, 0);
-        } else if (code == GLFW_KEY_RIGHT) { // strafe left relative to body orientation
-          camera.move(1, 0, 0);
-          if (debug)
-            mapView.move(1, 0, 0);
-        } else if (code == GLFW_KEY_UP) { // forward
-          camera.move(0, 1, 0);
-          if (debug)
-            mapView.move(0, 1, 0);
-        } else if (code == GLFW_KEY_DOWN) { // backward
-          camera.move(0, -1, 0);
-          if (debug)
-            mapView.move(0, -1, 0);
-        } else if (code == GLFW_KEY_W) { // up
-          camera.move(0, 0, 1);
-          if (debug)
-            mapView.move(0, 0, 1);
-        } else if (code == GLFW_KEY_S) { // down
-          camera.move(0, 0, -1);
-          if (debug)
-            mapView.move(0, 0, -1);
-        } else if (code == GLFW_KEY_R) { // down
-
-        }
-      } // input event is a key
-      else if (info.kind == 'm') { // mouse moved
-        // System.out.println( info );
-      } else if (info.kind == 'b') { // button action
-        System.out.println(info);
-        System.out.println(" updates info ");
-        camera.update(hp1);
-        camera.info();
-
-        mapView.mapUpdate(hp1);
-        mapView.info();
+   public Vec4 perspDiv() {
+      Vec4 p = new Vec4();
+      for (int k=0; k<4; k++) {
+         p.data[k] = data[k] / data[3];
       }
-    } // loop to process all input events
-  }
+      return p;
+   }
 
-  // hide retina display issue from ourselves
-  private void setViewport(int left, int bottom, int width, int height) {
-    // Note: the Util.retinaDisplay constant adjusts for
-    // whether have Mac retina display (double pixels, I guess)
-    // or not
-    GL11.glViewport(Util.retinaDisplay * left, Util.retinaDisplay * bottom, Util.retinaDisplay * width,
-        Util.retinaDisplay * height);
-  }
+   // send the x,y,z part of buffer
+   public void sendData( FloatBuffer buffer ) {
+      buffer.put( (float) data[0] );
+      buffer.put( (float) data[1] );
+      buffer.put( (float) data[2] );
+   }
 
-  protected void display() {
-    super.display(); // just clears the color and depth buffers
+   public String toString() {
+      String s = "[";
+      for (int k=0; k<4; k++) {
+         s += String.format("%12.5f", data[k] );
+      }
+      s += "]";
+      return s;
+   }
 
+ // -----------------------
 
-    sendData();
-    map();
-    update();
-    // permSoups.draw();
-  }
+/*
 
-  protected void update() {
-    camera.update(hp1); // updates and sends frustum and lookAt
+   public void sendData( FloatBuffer buff ) {
+      buff.put( (float) x );
+      buff.put( (float) y );
+      buff.put( (float) z );
+   }
 
-    setViewport(0, 0, 500, 500);
-    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, Block.getNumVerts(blocks));
-    Util.error("after draw arrays");
+   // get perspective view transformation of this point in space
+   // from the camera and send it
+   public void sendData( FloatBuffer buff, Camera camera ) {
 
-  }
+      Vec4 r = camera.viewTransform( this );
 
-  protected void map() {
-    mapView.mapUpdate(hp1);
+      buff.put( (float) r.x );
+      buff.put( (float) r.y );
+      buff.put( (float) r.z );
+   }
 
-    setViewport(500, 0, 500, 500);
-    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, Block.getNumVerts(blocks));
-    Util.error("after draw arrays");
-  }
+   // return this triple minus the other
+   public Vec4 minus( Vec4 other ) {
+      return new Vec4( x - other.x, y - other.y, z - other.z );
+   }
 
+   // compute dot product of this triple and
+   // the given other triple
+   public double dot( Vec4 other ) {
+      return x * other.x + y * other.y + z * other.z;
+   }
 
-  private void sendData() {
+   // compute cross product of this triple and
+   // the given other triple
+   public Vec4 cross( Vec4 other ) {
+      return new Vec4( y*other.z - z*other.y,
+                         z*other.x - x*other.z,
+                         x*other.y - y*other.x );
+   }
 
-    // delete previous handle and binding
-    // before doing a new one
-    if (vaoHandle != -1) {
-      GL30.glBindVertexArray(0);
-      GL30.glDeleteVertexArrays(vaoHandle);
-    }
+   // produce a normalized copy of this triple
+   public Vec4 normalize() {
+      double length = Math.sqrt( this.dot( this ) );
+      return new Vec4( x / length, y / length, z / length );
+   }
 
-      // using convenience form that produces one vertex array handle
-      vaoHandle = GL30.glGenVertexArrays();
-      Util.error("after generate vaoHandle vertex array");
-      GL30.glBindVertexArray(vaoHandle);
-      Util.error("after bind the vaoHandle");
-      // System.out.println("vao is " + vao );
+   public String toString() {
+      return String.format("[%10.4f %10.4f %10.4f]", x, y, z );
+   }
 
-      // connect data to the VBO's
-      vboPositionHandle = GL15.glGenBuffers();
-      Util.error("after generate vboPositionHandle buffer handle");
-      GL15.glBindBuffer( GL15.GL_ARRAY_BUFFER, vboPositionHandle );
-      Util.error("after bind vboPositionHandle");
+   public final static Vec4 up = new Vec4( 0, 0, 1 );
 
+   public static void main(String[] args) {
+      Vec4 e = new Vec4( 18, 20, 7 ), 
+             a = new Vec4( 9, 8, 7 ),
+             b = new Vec4( 1, 14, 12 ),
+             c = new Vec4( 13, 5, 17 ),
+             p1 = new Vec4( 8, 3, 9 ),
+             p2 = new Vec4( 4, 2, 6 ),
+             p3 = new Vec4( 3, 6, 10 );
 
-    positionBuffer.rewind();
-    // colorBuffer.rewind();
-    textureBuffer.rewind();
+      Vec4 eMinusA = e.minus(a),
+             bMinusA = b.minus(a),
+             cMinusA = c.minus(a),
+             p1MinusE = p1.minus(e),
+             p2MinusE = p2.minus(e),
+             p3MinusE = p3.minus(e);
 
-    for (int k = 0; k < blocks.size(); k++) {
-      blocks.get(k).sendData(positionBuffer, textureBuffer);
-    }
-    positionBuffer.rewind();
-    textureBuffer.rewind();
+      System.out.println( eMinusA + " " + bMinusA + " " + cMinusA +
+                          p1MinusE + " " + p2MinusE + " " + p3MinusE + "\n" );
 
-    // // connect data to the VBO's
-    // vboPositionHandle = Util.setupVBO(positionBuffer, 0, 3);
-    // vboTexCoordsHandle = Util.setupVBO(textureBuffer, 1, 2);
+      System.out.printf("%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n", eMinusA.dot(eMinusA), eMinusA.dot(bMinusA), eMinusA.dot(cMinusA), eMinusA.dot(p1MinusE), eMinusA.dot(p2MinusE), eMinusA.dot(p3MinusE) );
+      System.out.printf("%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n", bMinusA.dot(eMinusA), bMinusA.dot(bMinusA), bMinusA.dot(cMinusA), bMinusA.dot(p1MinusE), bMinusA.dot(p2MinusE), bMinusA.dot(p3MinusE) );
+      System.out.printf("%10.4f %10.4f %10.4f %10.4f %10.4f %10.4f\n", cMinusA.dot(eMinusA), cMinusA.dot(bMinusA), cMinusA.dot(cMinusA), cMinusA.dot(p1MinusE), cMinusA.dot(p2MinusE), cMinusA.dot(p3MinusE) );
 
-        // now connect the buffers
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, positionHandle);
-        Util.error("after bind positionHandle");
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
-        Util.error("after set position data");
-  
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureHandle);
-        Util.error("after bind textureHandle");
-        GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureHandle, GL15.GL_STATIC_DRAW);
-        Util.error("after set texture data");
-  
-        // enable the vertex array attributes
-        GL20.glEnableVertexAttribArray(0); // position
-        Util.error("after enable attrib 0");
-        GL20.glEnableVertexAttribArray(1); // color
-        Util.error("after enable attrib 1");
-  
-        // map index 0 to the position buffer index 1 to the color buffer
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, positionHandle);
-        Util.error("after bind position buffer");
-        GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-        Util.error("after do position vertex attrib pointer");
-  
-        // map index 1 to the color buffer
-        GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureHandle);
-        Util.error("after bind color buffer");
-        GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, 0, 0);
-        Util.error("after do color vertex attrib pointer");
-  
+      double lambda, beta, gamma;
 
-  }
+      lambda = - eMinusA.dot( eMinusA ) / eMinusA.dot( p1MinusE );
+      beta = lambda * bMinusA.dot( p1MinusE ) / bMinusA.dot( bMinusA );
+      gamma = lambda * cMinusA.dot( p1MinusE ) / cMinusA.dot( cMinusA );
+      System.out.printf("%10.4f %10.4f %10.4f\n", beta, gamma, lambda );
 
-  // given an array with data in it and an allocated buffer,
-  // overwrite buffer contents with array data
-  private void sendArrayToBuffer(float[] array, FloatBuffer buffer) {
-    buffer.rewind();
-    for (int k = 0; k < array.length; k++) {
-      buffer.put(array[k]);
-    }
+      lambda = - eMinusA.dot( eMinusA ) / eMinusA.dot( p2MinusE );
+      beta = lambda * bMinusA.dot( p2MinusE ) / bMinusA.dot( bMinusA );
+      gamma = lambda * cMinusA.dot( p2MinusE ) / cMinusA.dot( cMinusA );
+      System.out.printf("%10.4f %10.4f %10.4f\n", beta, gamma, lambda );
 
-  } // sendArrayToBuffer
-} // DigitalCastle
+      lambda = - eMinusA.dot( eMinusA ) / eMinusA.dot( p3MinusE );
+      beta = lambda * bMinusA.dot( p3MinusE ) / bMinusA.dot( bMinusA );
+      gamma = lambda * cMinusA.dot( p3MinusE ) / cMinusA.dot( cMinusA );
+      System.out.printf("%10.4f %10.4f %10.4f\n", beta, gamma, lambda );
+
+   }
+
+*/
+
+}

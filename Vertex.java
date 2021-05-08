@@ -5,8 +5,21 @@ public class Vertex {
 
    // private Triple position;
    // private Triple color;
+
    private double x, y, z; // position
    private double s, t; // texture coordinates
+
+
+   public double[] data;
+
+   public Vertex() {
+      data = new double[4];
+   }
+
+
+   public Vertex toVertex() {
+      return new Vertex(x, y, z, s, t);
+   }
 
    public Vertex(double xin, double yin, double zin, double sIn, double tIn) {
       x = xin;
@@ -41,9 +54,10 @@ public class Vertex {
       return "[" + x + " " + y + " " + z + "]";
    }
 
-   // public Vertex(Triple p, Triple c) {
-   //    position = p;
-   //    color = c;
+   
+   // public toTriangle(Vertex a, Vertex b, Vertex c, int texIn) {
+
+   //    return new Triangle(a, b, c, texIn);
    // }
 
    // public Vertex(Scanner input) {
