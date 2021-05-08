@@ -1,6 +1,7 @@
 import org.lwjgl.glfw.*;
 import org.lwjgl.opengl.*;
 
+
 import static org.lwjgl.glfw.Callbacks.*;
 import static org.lwjgl.glfw.GLFW.*; // just for the key constants
 import static org.lwjgl.system.MemoryUtil.*;
@@ -49,10 +50,10 @@ public class DigitalCastle extends Basic {
   private ArrayList<Block> blocks, perm;
 
   public static Pic[] pictures;
-  public Soups permSoups;
+ 
 
   private int positionHandle, colorHandle, textHandle;
-  private FloatBuffer positionBuffer, colorBuffer, textureBuffer;
+  private FloatBuffer positionBuffer, colorBuffer, textureBuffer, addAppBuffer;
   private Camera camera, mapView;
 
   // construct basic application with given title, pixel width and height
@@ -89,98 +90,53 @@ public class DigitalCastle extends Basic {
 
     Util.init();
 
+     
+
     OpenGL.init();
     OpenGL.useRegularProgram();
 
-    // // activate all the textures
     for (int k = 0; k < Pic.size(); k++) {
     OpenGL.loadTexture(Pic.get(k));
     System.out.println("activated texture number " + k);
     }
 
-    OpenGL.setBackColor(1, 1, 1);
+    GL11.glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
+    // enable depth testing
+    GL11.glEnable( GL11.GL_DEPTH_TEST );
+    GL11.glClearDepth( 1.0f );
 
-    // // ====================================================================
-    // // setup for drawing textured triangles:
 
-    // String vertexShaderCode1 = "#version 330 core\n" + "layout (location = 0) in vec3 vertexPosition;\n"
-    //     + "layout (location = 1) in vec2 vertexTexCoord;\n"
-    //     + "out vec2 texCoord;\n" 
-    //     + "uniform mat4 frustum;\n"
-    //     + "uniform mat4 lookAt;\n" 
-    //     + "void main(void)\n" 
-    //     + "{\n"
-    //     + "  texCoord = vertexTexCoord;\n"
-    //     + "  gl_Position = vec4(vertexPosition,1.0);\n"
-    //     + "}\n";
 
-    // System.out.println("Vertex shader for textured triangles:\n" + vertexShaderCode1 + "\n\n");
+        // set up texture
 
-    // v1 = new Shader("vertex", vertexShaderCode1);
+        GL13.glActiveTexture( GL13.GL_TEXTURE0 );
+        Util.error("after activate texture unit 0");
+ System.out.println( "texture unit 0 constant is " + GL13.GL_TEXTURE0 );
+ pic.setTextureId( GL11.glGenTextures() );
+ System.out.println("generated texture name is " + pic.getTextureId() );
+        Util.error("after generate texture id " + pic.getTextureId() );
+ GL11.glBindTexture( GL11.GL_TEXTURE_2D, pic.getTextureId() );
+        Util.error("after bind texture");
+ GL11.glTexImage2D( GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA,
+                    pic.getWidth(), pic.getHeight(), 0,   
+   // with this image is messed up:  pic.getHeight(), pic.getWidth(), 0, 
+                    GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, 
+                    pic.getData() );
+        Util.error("after set data");
 
-    // String fragmentShaderCode1 = "#version 330 core\n" 
-    //     + "in vec2 texCoord;\n"
-    //     + "layout (location = 0) out vec4 fragColor;\n" 
-    //     + "uniform sampler2D texture1;\n" 
-    //     + "void main(void)\n" 
-    //     + "{\n"
-    //     + "  fragColor = texture( texture1, texCoord );\n" 
-    //     + "}\n";
-
-    // System.out.println("Fragment shader for textured triangles:\n" + fragmentShaderCode1 + "\n\n");
-
-    // f1 = new Shader("fragment", fragmentShaderCode1);
-
-    // hp1 = GL20.glCreateProgram();
-    // Util.error("after create program");
-    // System.out.println("program handle is " + hp1);
-
-    // GL20.glAttachShader(hp1, v1.getHandle());
-    // Util.error("after attach vertex shader to program");
-
-    // GL20.glAttachShader(hp1, f1.getHandle());
-    // Util.error("after attach fragment shader to program");
-
-    // GL20.glLinkProgram(hp1);
-    // Util.error("after link program");
-
-    // GL20.glUseProgram(hp1);
-    // Util.error("after use program");
-
-    // // set background color to white
-    // GL11.glClearColor( 1.0f, 1.0f, 1.0f, 1.0f );
-
-    // // enable depth testing
-    // GL11.glEnable( GL11.GL_DEPTH_TEST );
-    // GL11.glClearDepth( 1.0f );
-
-    // // set up texture
-
-    // GL13.glActiveTexture(GL13.GL_TEXTURE0);
-    // Util.error("after activate texture 0");
-    // textureId1 = GL11.glGenTextures();
-    // Util.error("after generate texture id " + textureId1);
-    // GL11.glBindTexture(GL11.GL_TEXTURE_2D, textureId1);
-    // Util.error("after bind texture");
-    // GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA, pic.getWidth(), pic.getHeight(), 0,
-    //     // with this image is messed up: pic.getHeight(), pic.getWidth(), 0,
-    //     GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, pic.getData());
-    // Util.error("after set data");
-    // GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER, GL11.GL_NEAREST);
-    // Util.error("after set mag filter");
-    // GL11.glTexParameteri(GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER, GL11.GL_NEAREST);
-    // Util.error("after set min filter");
-
-    // send texture sampler as a uniform
-    int loc = GL20.glGetUniformLocation(hp1, "texture1");
-    Util.error("after get uniform location for texture1");
-    System.out.println("got loc for texture1: " + loc);
-    GL20.glUniform1i(loc, 0); // connect texture1 to texture unit 0
-    Util.error("after set value of texture1");
-
-    // =================================================================
-    // OpenGL setup
-
+ GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MAG_FILTER,
+                        GL11.GL_NEAREST );
+        Util.error("after set mag filter");
+ GL11.glTexParameteri( GL11.GL_TEXTURE_2D, GL11.GL_TEXTURE_MIN_FILTER,
+                        GL11.GL_LINEAR );
+        Util.error("after set min filter");
+ 
+ // send texture sampler as a uniform
+ int loc = GL20.glGetUniformLocation( hp1, "texture1" );
+        Util.error("after get uniform location for texture1");
+        System.out.println("got loc for texture1: " + loc );
+ GL20.glUniform1i( loc, 0 );  // connect texture1 to texture unit 0
+        Util.error("after set value of texture1");
 
   }
 
@@ -264,28 +220,25 @@ public class DigitalCastle extends Basic {
   protected void display() {
     super.display(); // just clears the color and depth buffers
 
-    GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+    // GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 
     // draw the textured triangles ======================================
 
-    GL20.glUseProgram(hp1);
-    Util.error("after use program");
-
     // activate vao
-    GL30.glBindVertexArray(vaoHandle1);
-    Util.error("after bind vao");
+    // GL30.glBindVertexArray(vaoHandle1);
+    // Util.error("after bind vao");
 
-    // for this very simple application, the triangles being drawn
-    // never change, so creation of the data buffer was done once and
-    // for all in init() method
+    // // for this very simple application, the triangles being drawn
+    // // never change, so creation of the data buffer was done once and
+    // // for all in init() method
 
-    // draw the buffers
-    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3 * 2);
-    Util.error("after draw arrays");
+    // // draw the buffers
+    // GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, 3 * 2);
+    // Util.error("after draw arrays");
 
-    // detach the vao
-    GL30.glBindVertexArray(0);
-    Util.error("after unbind vao");
+    // // detach the vao
+    // GL30.glBindVertexArray(0);
+    // Util.error("after unbind vao");
 
     sendData();
     map();
@@ -294,10 +247,15 @@ public class DigitalCastle extends Basic {
   }
 
   protected void update() {
+
+
+    // GL11.glClear( GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT );
     camera.update(hp1); // updates and sends frustum and lookAt
 
+    
+
     setViewport(0, 0, 500, 500);
-    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, Block.getNumVerts(blocks));
+    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0,Block.);
     Util.error("after draw arrays");
 
   }
@@ -312,6 +270,22 @@ public class DigitalCastle extends Basic {
 
   private void sendData() {
 
+    if (vboPositionHandle1 != -1) {
+      GL30.glBindVertexArray(0);
+      GL30.glDeleteVertexArrays(vao);
+   }
+   if (vboTexCoordsHandle1 != -1) {
+    GL30.glBindVertexArray(1);
+    GL30.glDeleteVertexArrays(vboTexCoordsHandle1);
+ }
+
+ if (vboPositionHandle2 != -1) {
+  GL30.glBindVertexArray(2);
+  GL30.glDeleteVertexArrays(vboPositionHandle2);
+}
+
+
+
     positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
     textureBuffer = Util.createFloatBuffer(MAX * 3 * 2);
 
@@ -319,86 +293,77 @@ public class DigitalCastle extends Basic {
     textureBuffer.rewind();
 
     for (int k = 0; k < blocks.size(); k++) {
-      blocks.get(k).sendData(positionBuffer, textureBuffer);
+      System.out.println("blocks loop index is: " + k);
+      blocks.get(k).sendData( positionBuffer,  textureBuffer);
+
     }
     positionBuffer.rewind();
     textureBuffer.rewind();
 
-    // set up the tex coords VBO
-    vboTexCoordsHandle1 = GL15.glGenBuffers();
-    Util.error("after generate tex coords buffer handle");
-    System.out.println("tex coords handle: " + vboTexCoordsHandle1);
-    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboTexCoordsHandle1);
-    Util.error("after bind tex coords Handle");
-    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureBuffer, GL15.GL_STATIC_DRAW);
-    Util.error("after set tex coords data");
-    GL20.glEnableVertexAttribArray(1); // tex coords
-    Util.error("after enable attrib 1");
-    GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 0, 0);
-    Util.error("after do tex coords attrib pointer");
+
 
     // set up vertex array object
-    vaoHandle1 = GL30.glGenVertexArrays();
+    vboPositionHandle1 = GL30.glGenVertexArrays();
     Util.error("after generate single vertex array");
-    System.out.println("vertex array handle: " + vaoHandle1);
-    GL30.glBindVertexArray(vaoHandle1);
-    Util.error("after bind vao");
+    System.out.println("vertex array handle: " + vboPositionHandle1);
 
-    // set up the position VBO
-    vboPositionHandle1 = GL15.glGenBuffers();
-    Util.error("after generate position buffer handle");
-    System.out.println("position handle: " + vboPositionHandle1);
-    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboPositionHandle1);
-    Util.error("after bind positionHandle");
-    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
-    Util.error("after set position data");
-    GL20.glEnableVertexAttribArray(0); // position
-    Util.error("after enable attrib 0");
-    GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-    Util.error("after do position vertex attrib pointer");
 
     // set up the tex coords VBO
     vboTexCoordsHandle1 = GL15.glGenBuffers();
     Util.error("after generate tex coords buffer handle");
     System.out.println("tex coords handle: " + vboTexCoordsHandle1);
-    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboTexCoordsHandle1);
-    Util.error("after bind tex coords Handle");
-    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureBuffer, GL15.GL_STATIC_DRAW);
-    Util.error("after set tex coords data");
-    GL20.glEnableVertexAttribArray(1); // tex coords
-    Util.error("after enable attrib 1");
-    GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 0, 0);
-    Util.error("after do tex coords attrib pointer");
 
-    // set up vertex array object
-    vaoHandle1 = GL30.glGenVertexArrays();
-    Util.error("after generate single vertex array");
-    System.out.println("vertex array handle: " + vaoHandle1);
-    GL30.glBindVertexArray(vaoHandle1);
-    Util.error("after bind vao");
 
     // set up the position VBO
-    vboPositionHandle1 = GL15.glGenBuffers();
+    vboPositionHandle2 = GL15.glGenBuffers();
     Util.error("after generate position buffer handle");
-    System.out.println("position handle: " + vboPositionHandle1);
+    System.out.println("position handle: " + vboPositionHandle2);
+
+
+    // Util.bufferRewind();
+    // Util.sendBufferToGPU();
+    // Util.bufferRewind();
+
+
+    
     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboPositionHandle1);
     Util.error("after bind positionHandle");
     GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
     Util.error("after set position data");
-    GL20.glEnableVertexAttribArray(0); // position
+    GL20.glEnableVertexAttribArray(0); // position        <--------------------
     Util.error("after enable attrib 0");
     GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-    Util.error("after do position vertex attrib pointer");
+    Util.error("after enable attrib 0");
 
+
+
+
+    GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboTexCoordsHandle1);
+    Util.error("after bind tex coords Handle");
+    GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureBuffer, GL15.GL_STATIC_DRAW);
+    Util.error("after set tex coords data");
+    GL20.glEnableVertexAttribArray(1); // tex coords   <-------------------
+    Util.error("after enable attrib 1");
+    GL20.glVertexAttribPointer(1, 2, GL11.GL_FLOAT, false, 0, 0);
+    Util.error("after enable attrib 1");
+
+    
     // actually send the data over
     GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboPositionHandle2);
-    Util.error("after bind positionHandle");
+    Util.error("after bind positionHandle2");
     GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
     Util.error("after set points data");
-    GL20.glEnableVertexAttribArray(0); // vertexPosition
-    Util.error("after enable attrib 0");
-    GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-    Util.error("after do position vertex attrib pointer");
+    GL20.glEnableVertexAttribArray(2); // vertexPosition   <--------------------------------
+    Util.error("after enable attrib 2");
+    GL20.glVertexAttribPointer(2, 3, GL11.GL_FLOAT, false, 0, 0);
+    Util.error("after enable attrib 2");
+
+
+
+
+    OpenGL.selectTexture(Pic.get(2));
+   
+
 
     // ------------------------------
     // send value of uniform color over to GPU
@@ -408,69 +373,14 @@ public class DigitalCastle extends Basic {
     // Util.error("after set value of color");
     // ------------------------------
 
-    // draw the arrays
-    GL11.glDrawArrays(GL11.GL_LINES, 0, 8);
-    Util.error("after draw arrays");
+    // // draw the arrays
+    // GL11.glDrawArrays(GL11.GL_LINES, 0, 8);
+    // Util.error("after draw arrays");
 
-    // detach the vao
-    GL30.glBindVertexArray(0);
-    Util.error("after unbind vao");
-
-    // if (positionHandle != -1) {
+    // // detach the vao
     // GL30.glBindVertexArray(0);
-    // GL30.glDeleteVertexArrays(positionHandle);
-    // }
-    // if (textureHandle != -1) {
-    // GL30.glBindVertexArray(0);
-    // GL30.glDeleteVertexArrays(textureHandle);
-    // }
+    // Util.error("after unbind vao");
 
-    // System.out.println("Usage: DigitalCastleSend data");
-
-    // System.out.println("have position handle " + positionHandle + " and color
-    // handle " + colorHandle);
-
-    // // create the buffers (data doesn't matter so much, just the size)
-    // positionBuffer = Util.createFloatBuffer(MAX * 3 * 3);
-    // textureBuffer = Util.createFloatBuffer(MAX * 3 * 3);
-
-    // positionHandle = Util.setupVBO(positionBuffer, 0, 4);
-    // textureHandle = Util.setupVBO(textureBuffer, 1, 4);
-
-    // // vboPositionHandle = Util.setupVBO(positionBuffer, 0, 3);
-    // // vboTexCoordsHandle = Util.setupVBO(textureBuffer, 1, 2);
-
-    // // now connect the buffers
-    // GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, positionHandle);
-    // Util.error("after bind positionHandle");
-    // GL15.glBufferData(GL15.GL_ARRAY_BUFFER, positionBuffer, GL15.GL_STATIC_DRAW);
-    // Util.error("after set position data");
-
-    // GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureHandle);
-    // Util.error("after bind textureHandle");
-    // GL15.glBufferData(GL15.GL_ARRAY_BUFFER, textureHandle, GL15.GL_STATIC_DRAW);
-    // Util.error("after set texture data");
-
-    // // enable the vertex array attributes
-    // GL20.glEnableVertexAttribArray(0); // position
-    // Util.error("after enable attrib 0");
-    // GL20.glEnableVertexAttribArray(1); // color
-    // Util.error("after enable attrib 1");
-
-    // // map index 0 to the position buffer index 1 to the color buffer
-    // GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, positionHandle);
-    // Util.error("after bind position buffer");
-    // GL20.glVertexAttribPointer(0, 3, GL11.GL_FLOAT, false, 0, 0);
-    // Util.error("after do position vertex attrib pointer");
-
-    // // map index 1 to the color buffer
-    // GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, textureHandle);
-    // Util.error("after bind color buffer");
-    // GL20.glVertexAttribPointer(1, 3, GL11.GL_FLOAT, false, 0, 0);
-    // Util.error("after do color vertex attrib pointer");
-
-    // delete previous handle and binding
-    // before doing a new one
 
   }
 

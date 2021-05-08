@@ -7,8 +7,8 @@ public class Vertex {
    // private Triple color;
 
    private double x, y, z; // position
-   private double s, t; // texture coordinates
 
+   private double s, t; // texture coordinates
 
    public double[] data;
 
@@ -16,9 +16,22 @@ public class Vertex {
       data = new double[4];
    }
 
+   public Vertex( double x, double y, double z ) {
+      data = new double[4];
+      data[0] = x;  data[1] = y; data[2] = z; 
+      data[3] = 1;
+   }
+
+
+   public Vertex( double x, double y ) {
+      data = new double[4];
+      data[0] = x;  data[1] = y; data[2] = 1; 
+      data[3] = 1;
+   }
+
 
    public Vertex toVertex() {
-      return new Vertex(x, y, z, s, t);
+      return new Vertex( x, y, z, s, t);
    }
 
    public Vertex(double xin, double yin, double zin, double sIn, double tIn) {
@@ -38,17 +51,16 @@ public class Vertex {
    }
 
    // send position data to Util.appDataBuffer
-   public void positionToBuffer() {
-      Util.bufferPut(x);
-      Util.bufferPut(y);
-      Util.bufferPut(z);
-      Util.bufferPut(1);
+   public void posToBuffer(FloatBuffer buffer) {
+      buffer.put( (float) data[0] );
+      buffer.put( (float) data[1] );
+      buffer.put( (float) data[2] );
    }
 
    // send texCoords data to Util.appDataBuffer
-   public void texCoordsToBuffer() {
-      Util.bufferPut(s);
-      Util.bufferPut(t);
+   public void texToBuffer(FloatBuffer buffer) {
+      buffer.put( (float) data[3] );
+      buffer.put( (float) data[4] );
    }
 
    public String toString() {

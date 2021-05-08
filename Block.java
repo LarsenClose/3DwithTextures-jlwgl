@@ -9,8 +9,6 @@ public class Block {
 
   private static int nextId = 0;
   private int id;
-  public Triangle triMe;
-  public TriSoup triWe;
 
   protected double cx, cy, cz;  //  current center point of the block
   protected double sx, sy, sz;  // current size of block
@@ -29,10 +27,14 @@ public class Block {
    public int numVerts() {
       return tris.length * 3;
    }
+   public int numTextme() {
+      return tris.length * 2;
+   }
 
    // instance fields
    private String kind;
-   private Vertex[] verts;  // all model vertices of the triangles
+   private Vertex[] verts;  // made of vertex
+   private Triple[] tverts;  // made of triple
    private int[][] tris;    // indices into verts of each triangle
    public ArrayList<Mat4> matrices;
    public ArrayList<Triangle> plsTris;
@@ -53,14 +55,14 @@ public class Block {
 
       kind = input.next();
       input.nextLine();
-      ArrayList<Triangle> someTris = new ArrayList<Triangle>();
-
 
 
       if (kind.equals("groundBox") || kind.equals("clownBox") || kind.equals("groundBoxed")
             || kind.equals("sierpinskiBox") || kind.equals("pyraBox")) {
          if (kind.equals("pyraBox") || kind.equals("sierpinskiBox")) {
             // build the model vertices
+            System.out.println("other kind of block");
+
             verts = new Vertex[5];
             // x y z <=> 4 2 1
             verts[0] = new Vertex(-1, -1, 0, 0, 0);
@@ -68,6 +70,14 @@ public class Block {
             verts[2] = new Vertex(1, -1, 0, 0, 0);
             verts[3] = new Vertex(1, 1, 0, 0, 0);
             verts[4] = new Vertex(0, 0, 1, 0, 0);
+
+            tverts = new Triple[5];
+            tverts[0] = new Triple(-1, -1, 0);
+            tverts[1] = new Triple(-1, 1, 0);
+            tverts[2] = new Triple(1, -1, 0);
+            tverts[3] = new Triple(1, 1, 0);
+            tverts[4] = new Triple(0, 0, 1);
+
 
             // build the triangles
             tris = new int[][] { { 0, 1, 2 }, { 2, 3, 1 }, // bottom
@@ -77,6 +87,7 @@ public class Block {
 
          else if (kind.equals("groundBox") || kind.equals("clownBox")) {
 
+            System.out.println("ground kind of block");
             // build the model vertices
             verts = new Vertex[8];
             // x y z <=> 4 2 1
@@ -88,6 +99,18 @@ public class Block {
             verts[5] = new Vertex(1, -1, 1, 0, 0);
             verts[6] = new Vertex(1, 1, -1, 0, 0);
             verts[7] = new Vertex(1, 1, 1, 0, 0);
+
+            tverts = new Triple[8];
+            // x y z <=> 4 2 1
+            tverts[0] = new Triple(-1, -1, -1);
+            tverts[1] = new Triple(-1, -1, 1);
+            tverts[2] = new Triple(-1, 1, -1);
+            tverts[3] = new Triple(-1, 1, 1);
+            tverts[4] = new Triple(1, -1, -1);
+            tverts[5] = new Triple(1, -1, 1);
+            tverts[6] = new Triple(1, 1, -1);
+            tverts[7] = new Triple(1, 1, 1);
+
 
             // build the triangles
             tris = new int[][] { { 0, 4, 5 }, { 0, 5, 1 }, // front face
@@ -127,7 +150,7 @@ public class Block {
 
    // send the position and color data for all the
    // vertices in all the triangles
-   public void sendData(FloatBuffer positionBuffer, FloatBuffer textBuffer) {
+   public void sendData(FloatBuffer positionBuffer, FloatBuffer textureBuffer) {
       Mat4 matrix = translate.mult(rotate.mult(scale));
      
 
@@ -135,47 +158,55 @@ public class Block {
       for (int k = 0; k < tris.length; k++) {
          
 
-         for (int j = 0; j < 3; j=j+3) {
-            Vertex v = matrix.mult(verts[tris[k][j]]);
+         for (int j = 0; j < 3; j++) {
 
+            Vec4 v = matrix.mult(tverts[tris[k][j]].toVec4());
+            v.posToBuffer(positionBuffer);
+
+            // Vertex v = matrix.mult(verts[tris[k][j]]);
             
-
-
-            v.positionToBuffer();
-
 
            
             if (kind.equals("clownBox")) {
+               v.texToBuffer( textureBuffer);
 
 
+               // OpenGL.selectTexture(Pic.get(3));
                // triMe.add( Triangle(vexxed[0], vexxed[1], vexxed[2], textures[0]));
-               v.texCoordsToBuffer();
+               // v.texCoordsToBuffer();
                
                // triMe.add( new Triangle(tris[k][0]), tris[k][1], tris[k][2], textures[0]);
                // vexxed.positionToBuffer();
                // vexxed.texCoordsToBuffer();
             } else if (kind.equals("pyraBox")) {
+               v.texToBuffer( textureBuffer);
 
+               // OpenGL.selectTexture(Pic.get(3));
                // triMe.add( Triangle(vexxed[0], vexxed[1], vexxed[2], textures[0]));
-               v.texCoordsToBuffer();
+               // v.texCoordsToBuffer();
                // vexxed.positionToBuffer();
                // vexxed.texCoordsToBuffer();
  
             } else if (kind.equals("sierpinskiBox")) {
+               v.texToBuffer( textureBuffer);
 
 
+               // OpenGL.selectTexture(Pic.get(3));
                // triMe.add( Triangle(vexxed[0], vexxed[1], vexxed[2], textures[0]));
-               v.texCoordsToBuffer();;
+               // v.texCoordsToBuffer();;
 
+               // OpenGL.selectTexture(Pic.get(3));
 
                // triMe.add( new Triangle(tris[k][0]), tris[k][1], tris[k][2], textures[0]);
 
                // vexxed.positionToBuffer();
                // vexxed.texCoordsToBuffer();
             } else if (kind.equals("groundBox")) {
+               v.texToBuffer( textureBuffer);
 
+               // OpenGL.selectTexture(Pic.get(3));
                // triMe.add( Triangle(vexxed[0], vexxed[1], vexxed[2], textures[0]));
-               v.texCoordsToBuffer();
+               // v.texCoordsToBuffer();we
             }
    
          }

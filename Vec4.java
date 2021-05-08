@@ -46,6 +46,22 @@ public class Vec4 {
       return s;
    }
 
+   
+      // send position data to Util.appDataBuffer
+      public void posToBuffer(FloatBuffer buffer) {
+         buffer.put( (float) data[0] );
+         buffer.put( (float) data[1] );
+         buffer.put( (float) data[2] );
+      }
+   
+      // send texCoords data to Util.appDataBuffer
+      public void texToBuffer(FloatBuffer buffer) {
+         buffer.put( (float) data[3] );
+         buffer.put( (float) 0 );
+      }
+   
+
+
  // -----------------------
 
 /*

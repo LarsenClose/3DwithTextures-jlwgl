@@ -18,17 +18,13 @@ public class Triangle {
    //    b = new Vertex(input);
    //    c = new Vertex(input);v.sendData(positionBuffer);
 
-   public void positionToBuffer() {
-      a.positionToBuffer();
-      b.positionToBuffer();
-      c.positionToBuffer();
-   }
-
-   // send texCoords data for triangle to Util.appDataBuffer
-   public void texCoordsToBuffer() {
-      a.texCoordsToBuffer();
-      b.texCoordsToBuffer();
-      // c.texCoordsToBuffer();
+   public void toBuffers2( FloatBuffer pb, FloatBuffer cb ) {
+      a.posToBuffer(pb);
+      a.texToBuffer(cb);
+      b.posToBuffer(pb);
+      b.texToBuffer(cb);
+      c.posToBuffer(pb);
+      c.texToBuffer(cb);
    }
 
    public int getTexture() {
