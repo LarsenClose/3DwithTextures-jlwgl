@@ -25,11 +25,9 @@ public class Block {
    }
 
    public int numVerts() {
-      return tris.length * 3;
-   }
-   public int numTextme() {
       return tris.length * 2;
    }
+   
 
    // instance fields
    private String kind;

@@ -255,7 +255,7 @@ public class DigitalCastle extends Basic {
     
 
     setViewport(0, 0, 500, 500);
-    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0,Block.);
+    GL11.glDrawArrays(GL11.GL_TRIANGLES, 0, Block.getNumVerts(blocks));
     Util.error("after draw arrays");
 
   }
@@ -272,7 +272,7 @@ public class DigitalCastle extends Basic {
 
     if (vboPositionHandle1 != -1) {
       GL30.glBindVertexArray(0);
-      GL30.glDeleteVertexArrays(vao);
+      GL30.glDeleteVertexArrays(vboPositionHandle1);
    }
    if (vboTexCoordsHandle1 != -1) {
     GL30.glBindVertexArray(1);
@@ -361,7 +361,7 @@ public class DigitalCastle extends Basic {
 
 
 
-    OpenGL.selectTexture(Pic.get(2));
+    // OpenGL.selectTexture(Pic.get(2));
    
 
 
